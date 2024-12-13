@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Таймеры обратного отсчёта</title>
+    <style>
+        .timers-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timer-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px 25px;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+        }
+
+        .time-display {
+            font-size: 21px;
+            margin-right: 10px;
+        }
+
+        button {
+            margin-left: 5px;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Таймеры обратного отсчёта</h1>
+        <div class="input-section">
+            <input type="number" id="timer-input" placeholder="Введите время в секундах" min="1">
+            <button id="add-timer">Добавить таймер</button>
+        </div>
+        <ul id="timers" class="timers-list"></ul>
+    </div>
+    <script>
+        document.getElementById('add-timer').addEventListener('click', () => {
+            const input = document.getElementById('timer-input');
+            const duration = parseInt(input.value, 10);
+
+            if (isNaN(duration) || duration < 1) {
+                alert('Введите корректное время в секундах!');
+                return;
+            }
+
+            createTimer(duration);
+            input.value = '';
+        });
+
+        function createTimer(duration) {
+            let remainingTime = duration;
+            let isRunning = true;
+            let intervalId;
+
+            const timerItem = document.createElement('li');
+            timerItem.className = 'timer-item';
+
+            const timeDisplay = document.createElement('span');
+            timeDisplay.className = 'time-display';
+            timeDisplay.textContent = `${remainingTime} сек.`;
+            timerItem.appendChild(timeDisplay);
+
+            const stopButton = document.createElement('button');
+            stopButton.textContent = 'Стоп';
+            stopButton.addEventListener('click', () => {
+                if (isRunning) {
+                    clearInterval(intervalId);
+                    isRunning = false;
+                    stopButton.textContent = 'Старт';
+                } else {
+                    startTimer();
+                    isRunning = true;
+                    stopButton.textContent = 'Стоп';
+                }
+            });
+            timerItem.appendChild(stopButton);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Удалить';
+            deleteButton.addEventListener('click', () => {
+                clearInterval(intervalId);
+                timerItem.remove();
+            });
+            timerItem.appendChild(deleteButton);
+
+            document.getElementById('timers').appendChild(timerItem);
+
+            function startTimer() {
+                intervalId = setInterval(() => {
+                    if (remainingTime > 0) {
+                        remainingTime--;
+                        timeDisplay.textContent = `${remainingTime} сек.`;
+                    } else {
+                        clearInterval(intervalId);
+                        timerItem.remove();
+                    }
+                }, 1000);
+            }
+
+            startTimer();
+        }
+    </script>
+</body>
+</html>
